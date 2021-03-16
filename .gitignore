@@ -1,2 +1,11 @@
 # Project exclude paths
 /target/
+/tokens/
+/logs/
+.idea
+*.iws
+*.iml
+*.ipr
+src/main/resources/secrets.properties
+src/main/resources/credentials.json
+

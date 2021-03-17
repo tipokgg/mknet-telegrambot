@@ -3,6 +3,7 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import service.EmployeeService;
 import service.SecretsService;
 
 
@@ -12,6 +13,9 @@ public class TelegramBot {
 
     public static void main(String[] args) {
         LOGGER.info("Bot started up....");
+
+        EmployeeService.init(); // инициализируем объекты монтажников для приложения
+
         ApiContextInitializer.init(); // Инициализируем апи
         TelegramBotsApi botApi = new TelegramBotsApi();
         Bot bot = new Bot(
@@ -22,5 +26,6 @@ public class TelegramBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+
     }
 }

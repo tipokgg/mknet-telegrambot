@@ -1,4 +1,5 @@
 import GoogleAPIUtils.SheetsQuickstart;
+import com.google.api.services.sheets.v4.model.RowData;
 import com.vdurmont.emoji.EmojiParser;
 import dao.SQLConnector;
 import entity.BillingContract;
@@ -44,7 +45,7 @@ public class Bot extends TelegramLongPollingBot {
 
         try {
             if (update.hasMessage() &&
-                    EmployeeService.getFullNameByTelegramId(update.getMessage().getChatId()) != null) {
+                    EmployeeService.getFullName(update.getMessage().getChatId()) != null) {
 
                 if (update.getMessage().hasText()) {
                     if (update.getMessage().getText().equals("/start")) {
@@ -53,7 +54,7 @@ public class Bot extends TelegramLongPollingBot {
                 }
 
             } else if (update.hasCallbackQuery() &&
-                    EmployeeService.getFullNameByTelegramId(update.getCallbackQuery().getMessage().getChatId()) != null) {
+                    EmployeeService.getFullName(update.getCallbackQuery().getMessage().getChatId()) != null) {
 
                 // конструкция try-finally для того чтобы отправить ответ на Callback Query в блоке finally
                 try {
@@ -148,7 +149,10 @@ public class Bot extends TelegramLongPollingBot {
                     } else if (update.getCallbackQuery().getData().startsWith("±cabdiag")) {
 
                         String[] ss = update.getCallbackQuery().getData().split("±");
+                        long startCableTest = System.currentTimeMillis();
                         String message = CableService.testCable(ss[2]);
+                        long end = System.currentTimeMillis() - startCableTest;
+                        System.out.println("Method testCable worked for " + end / 1000.0f + " secs");
 
                         execute(new SendMessage()
                                 .setParseMode("HTML")
@@ -197,54 +201,53 @@ public class Bot extends TelegramLongPollingBot {
 
     public SendMessage sendInlineKeyBoardMessage(long telegramId, Date date) throws IOException, GeneralSecurityException {
 
-        Map<String, String> map = SheetsQuickstart.getMapWithTickets(telegramId, date);
+        List<RowData> cells = SheetsQuickstart.getRowData(telegramId, date);
 
-        if (map == null) {
+        if (cells == null) {
             return new SendMessage().setChatId(telegramId)
                     .setText("Не найдено заявок для TelegramID " + telegramId);
         }
 
-        Set<Map.Entry<String, String>> entries = map.entrySet();
-        Map.Entry<String, String>[] entryArray = entries.toArray(new Map.Entry[entries.size()]);
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 
-        for (int i = 0; i < map.size(); i++) {
+        for (int i = 0; i < 10; i++) {
 
-            String beforeCleaning = entryArray[i].getValue(); // сохраняем состояние до выделения всех цифр изх строки
-            String clearNumber = beforeCleaning.replaceAll("\\D+", ""); // берём все цифры из строки
+            String clearNumber = "";
+            String beforeCleaning = cells.get(i+1).getValues().get(0).getFormattedValue(); // сохраняем состояние до выделения всех цифр изх строки
 
-            // проверяем, что полученная строчка подходит под логику технички или подключки
-            if (SheetsQuickstart.isInstallOrTechnical(clearNumber).equals("empty_type")) {
+            if (beforeCleaning != null)
+                clearNumber = beforeCleaning.replaceAll("\\D+", ""); // берём все цифры из строки
+
+            // если полученная строчка не подходит под логику технички или подключки
+            if (isInstallOrTechnical(clearNumber).equals("empty_type")) {
                 // если не подходит (вернулся empty_type), то в clearNumber записываем то что было в ячейке изначально
                 clearNumber = "empty_type±" + beforeCleaning;
             }
 
-            String formattedNumber; // подготовка "форматированного" текста, который будет отображаться на кнопке на клавиатуре
+            String formattedNumber = ""; // подготовка "форматированного" текста, который будет отображаться на кнопке на клавиатуре
 
-            // идём в график и проверяем по первоначальному значению ячейки, зачеркнута она или нет.
-            // есть нет, то вернутся координаты незачеркнутой ячейки
-            List<Integer> list = StrikethroughService.getCellCoordinatesByData(beforeCleaning, telegramId);
 
-            // в зависимости от того, зачёркнута эта ячейка или нет, подготавливаем вывод
-            if (list.size() == 0 && !clearNumber.equals("")) { // если зачеркнута и не пустая
-                formattedNumber = entryArray[i].getValue() + " " + "(зачеркнуто)";
-            } else if (!clearNumber.equals("")) { // если не зачеркнута и не пустая
-                formattedNumber = entryArray[i].getValue() + " " +
-                        SQLConnector.getSmallAddress(SheetsQuickstart.isInstallOrTechnical(clearNumber), clearNumber);
-            } else { // если ячейка пустая
+            // в зависимости от того, зачёркнута эта ячейка или нет (или вообще пустая), подготавливаем вывод
+            if (beforeCleaning == null)
                 formattedNumber = "(пусто)";
-            }
+            else if (cells.get(i+1).getValues().get(0).getEffectiveFormat().getTextFormat().getStrikethrough())
+                formattedNumber = cells.get(i+1).getValues().get(0).getFormattedValue() + " " + EmojiParser.parseToUnicode(" :white_check_mark:");
+            else if (!cells.get(i+1).getValues().get(0).getEffectiveFormat().getTextFormat().getStrikethrough())
+                formattedNumber = cells.get(i+1).getValues().get(0).getFormattedValue() + SQLConnector.getSmallAddress(isInstallOrTechnical(clearNumber), clearNumber);
 
+            // собираем кнопку
             InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton()
-                    .setText(specialTrim(entryArray[i].getKey()) + ": " + formattedNumber)
+                    .setText(specialTrim(cells.get(i).getValues().get(0).getFormattedValue()) + ": " + formattedNumber)
                     .setCallbackData("±" + clearNumber);
 
             List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
             keyboardButtonsRow.add(inlineKeyboardButton);
             rowList.add(keyboardButtonsRow);
+
+            i++; // увеличиваем счётчик чтобы перескочить строку
         }
 
         // подготовка дат для перемещения по графику вперёд-назад
@@ -274,7 +277,7 @@ public class Bot extends TelegramLongPollingBot {
         inlineKeyboardMarkup.setKeyboard(rowList);
 
         return new SendMessage().setChatId(telegramId)
-                .setText("Заявки для " + EmployeeService.getFullNameByTelegramId(telegramId) + " на " + sdf.format(date))
+                .setText("Заявки для " + EmployeeService.getFullName(telegramId) + " на " + sdf.format(date))
                 .setReplyMarkup(inlineKeyboardMarkup);
     }
 
@@ -350,6 +353,19 @@ public class Bot extends TelegramLongPollingBot {
 
         return result;
     }
+
+    public static String isInstallOrTechnical(String input) {
+
+        String onlyDigits = input.replaceAll("\\D+", "");
+
+        if (onlyDigits.length() != 5) return "empty_type";
+
+        if (onlyDigits.startsWith("2") || onlyDigits.startsWith("3")) return "isInstall";
+        if (onlyDigits.startsWith("8")) return "isRepair";
+
+        return "empty_type";
+    }
+
 
     @Override
     public String getBotToken() {

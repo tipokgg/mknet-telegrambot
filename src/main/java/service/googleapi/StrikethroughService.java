@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class StrikethroughService {
+    // зачеркивает обределенную ячейку в графике
+    // в метод нужно передать номер столбца и номер строки
     public static String setStrikethroughForCell(Integer column, Integer row) throws IOException, GeneralSecurityException {
 
         String a1Notation = ColumnsConverter.getColumn(column) + (row + 1);
@@ -59,29 +61,11 @@ public class StrikethroughService {
     // в список добавляет координаты первой встретившейся ячейки, которая не зачеркнута
     public static List<Integer> getCellCoordinatesByData(String data, long telegramId) throws IOException {
 
+        long start = System.currentTimeMillis();
+
         Sheets sheetsService = SheetsServiceUtil.getSheetsService(); // получения объекта для взаимодействия с GoogleAPI
-        int startString = 0; // строка, с которой начинаются заявки нужного монтажника
-        String fullName = EmployeeService.getFullNameByTelegramId(telegramId); // поиск ФИО по телеграм ид
+        int startString = EmployeeService.getRow(telegramId); // строка, с которой начинаются заявки нужного монтажника
 
-        String searchStartStringRange = "Лист1!A1:A100";
-
-        ValueRange startStringResponse = sheetsService.spreadsheets().values()
-                .get(SheetsServiceUtil.getSpreadsheetId(), searchStartStringRange)
-                .execute();
-
-        List<List<Object>> b = startStringResponse.getValues();
-
-        for (int i = 0; i < b.size(); i++) {
-            if (!b.get(i).isEmpty()) {
-                if (b.get(i).get(0).equals(fullName)) {
-                    startString = i + 1;
-                    break;
-                }
-            }
-        }
-
-        // если прошлись в цикле и не нашли совпадений по ФИО в графике, метод вернёт null
-        if (startString == 0) return null;
 
         List<String> ranges = Collections.singletonList("B" + startString + ":AM" + (startString + 9));
 
@@ -108,6 +92,9 @@ public class StrikethroughService {
                 }
             }
         }
+
+        long end = System.currentTimeMillis() - start;
+        System.out.println("Method getCellCoordinatesByData() in StrikethroughService worked for " + end / 1000.0f + " secs");
 
         return cell;
     }

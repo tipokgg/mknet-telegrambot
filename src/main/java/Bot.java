@@ -191,6 +191,8 @@ public class Bot extends TelegramLongPollingBot {
 
         } catch (TelegramApiException | IOException | GeneralSecurityException e) {
             LOGGER.error("Exception in onUpdateReceived method (global)", e);
+        } catch (Exception e) {
+            LOGGER.error("Unhandled exception in onUpdateReceived() method", e);
         }
 
         long end = System.currentTimeMillis() - start;
@@ -354,7 +356,7 @@ public class Bot extends TelegramLongPollingBot {
         return result;
     }
 
-    public String isInstallOrTechnical(String input) {
+    private String isInstallOrTechnical(String input) {
 
         String onlyDigits = input.replaceAll("\\D+", "");
 

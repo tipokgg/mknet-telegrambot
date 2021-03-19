@@ -85,7 +85,7 @@ public class EmployeeService {
         long end = System.currentTimeMillis() - start;
         System.out.println("Method getEmployees() in EmployeeService worked for " + end / 1000.0f + " secs");
 
-        LOGGER.info("Successful initialization Employees in EmployeeService. Founded employees with TelegramID: " + result.size());
+        LOGGER.info("Successful initialization Employees in EmployeeService. Employees with TelegramID were found: " + result.size());
 
         return result;
 

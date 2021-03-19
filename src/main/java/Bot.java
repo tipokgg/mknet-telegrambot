@@ -216,7 +216,7 @@ public class Bot extends TelegramLongPollingBot {
         for (int i = 0; i < 10; i++) {
 
             String clearNumber = "";
-            String beforeCleaning = cells.get(i+1).getValues().get(0).getFormattedValue(); // сохраняем состояние до выделения всех цифр изх строки
+            String beforeCleaning = cells.get(i + 1).getValues().get(0).getFormattedValue(); // сохраняем состояние до выделения всех цифр изх строки
 
             if (beforeCleaning != null)
                 clearNumber = beforeCleaning.replaceAll("\\D+", ""); // берём все цифры из строки
@@ -233,10 +233,10 @@ public class Bot extends TelegramLongPollingBot {
             // в зависимости от того, зачёркнута эта ячейка или нет (или вообще пустая), подготавливаем вывод
             if (beforeCleaning == null)
                 formattedNumber = "(пусто)";
-            else if (cells.get(i+1).getValues().get(0).getEffectiveFormat().getTextFormat().getStrikethrough())
-                formattedNumber = cells.get(i+1).getValues().get(0).getFormattedValue() + " " + EmojiParser.parseToUnicode(" :white_check_mark:");
-            else if (!cells.get(i+1).getValues().get(0).getEffectiveFormat().getTextFormat().getStrikethrough())
-                formattedNumber = cells.get(i+1).getValues().get(0).getFormattedValue() + SQLConnector.getSmallAddress(isInstallOrTechnical(clearNumber), clearNumber);
+            else if (cells.get(i + 1).getValues().get(0).getEffectiveFormat().getTextFormat().getStrikethrough())
+                formattedNumber = cells.get(i + 1).getValues().get(0).getFormattedValue() + " " + EmojiParser.parseToUnicode(" :white_check_mark:");
+            else if (!cells.get(i + 1).getValues().get(0).getEffectiveFormat().getTextFormat().getStrikethrough())
+                formattedNumber = cells.get(i + 1).getValues().get(0).getFormattedValue() + SQLConnector.getSmallAddress(isInstallOrTechnical(clearNumber), clearNumber);
 
             // собираем кнопку
             InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton()
@@ -354,7 +354,7 @@ public class Bot extends TelegramLongPollingBot {
         return result;
     }
 
-    public static String isInstallOrTechnical(String input) {
+    public String isInstallOrTechnical(String input) {
 
         String onlyDigits = input.replaceAll("\\D+", "");
 

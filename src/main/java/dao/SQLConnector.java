@@ -36,6 +36,7 @@ public class SQLConnector {
         BillingContract billingContract = new BillingContract();
         billingContract.setNumber(contract);
 
+        long start = System.currentTimeMillis();
         connect();
 
 
@@ -142,6 +143,8 @@ public class SQLConnector {
         }
 
         disconnect();
+        long end = System.currentTimeMillis() - start;
+        System.out.println("Method getBillingContractForInstall() worked for " + end / 1000.0f + " secs");
 
 
         return billingContract;

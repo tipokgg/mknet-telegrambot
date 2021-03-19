@@ -92,6 +92,9 @@ public class EmployeeService {
     }
 
     public static String getFullName(long telegramId) {
+
+        if (employees.get(telegramId) == null) return null;
+
         return employees.get(telegramId).getFullName();
     }
 

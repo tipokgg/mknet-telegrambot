@@ -6,6 +6,8 @@ services:
       context: .
     container_name: telegram_bot
     restart: always
+    ports:
+    - 8888:8888
     environment:
       - DB_BILLING=
       - DB_USER=

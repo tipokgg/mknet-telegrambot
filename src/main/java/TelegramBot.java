@@ -4,7 +4,6 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import service.EmployeeService;
-import service.SecretsService;
 
 
 public class TelegramBot {
@@ -19,8 +18,8 @@ public class TelegramBot {
         ApiContextInitializer.init(); // Инициализируем апи
         TelegramBotsApi botApi = new TelegramBotsApi();
         Bot bot = new Bot(
-                SecretsService.getProperty("TG_TOKEN"),
-                SecretsService.getProperty("TG_BOTUSERNAME"));
+                System.getenv("TG_TOKEN"),
+                System.getenv("TG_BOTUSERNAME"));
         try {
             botApi.registerBot(bot);
         } catch (TelegramApiException e) {

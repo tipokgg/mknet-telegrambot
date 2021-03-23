@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  telegrambot:
+    build:
+      context: .
+    container_name: telegram_bot
+    restart: always
+    environment:
+      - DB_BILLING=
+      - DB_USER=
+      - DB_PASS=
+      - TG_TOKEN=
+      - TG_BOTNAME=

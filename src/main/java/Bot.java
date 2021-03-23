@@ -14,7 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import service.CableService;
-import service.SecretsService;
 import service.EmployeeService;
 import service.googleapi.StrikethroughService;
 
@@ -34,7 +33,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return SecretsService.getProperty("TG_BOTNAME");
+        return  System.getenv("TG_BOTNAME");
         //возвращаем юзера
     }
 
@@ -373,7 +372,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return SecretsService.getProperty("TG_TOKEN");
+        return  System.getenv("TG_TOKEN");
         //Токен бота
     }
 }

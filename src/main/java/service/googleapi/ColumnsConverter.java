@@ -33,7 +33,7 @@ public class ColumnsConverter {
         map.put(20, "U");
         map.put(21, "V");
         map.put(22, "W");
-        map.put(23, "Z");
+        map.put(23, "X");
         map.put(24, "Y");
         map.put(25, "Z");
         map.put(26, "AA");
@@ -51,6 +51,7 @@ public class ColumnsConverter {
         map.put(38, "AM");
         map.put(39, "AN");
         map.put(40, "AO");
+        map.put(41, "AP");
     }
 
     public static String getColumn(int i) {

@@ -1,7 +1,6 @@
 package dao;
 
 import entity.BillingContract;
-import service.SecretsService;
 
 import java.sql.*;
 
@@ -14,9 +13,9 @@ public class SQLConnector {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    SecretsService.getProperty("DB_BILLING"),
-                    SecretsService.getProperty("DB_USER"),
-                    SecretsService.getProperty("DB_PASS"));
+                    System.getenv("DB_BILLING"),
+                    System.getenv("DB_USER"),
+                    System.getenv("DB_PASS"));
             statement = connection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
@@ -268,11 +267,11 @@ public class SQLConnector {
 
         StringBuilder sb = new StringBuilder("(");
 
-        query = "SELECT s.title AS street, h.house AS house, h.frac AS frac, cpt2.flat AS flat, cpt2.room\n" +
+        query = "SELECT s.title AS street, h.house AS house, h.frac AS frac, cpt2.flat AS flat, cpt2.room \n" +
                 "FROM contract_parameter_type_2 cpt2 \n" +
                 "INNER JOIN address_house h ON h.id = cpt2.hid \n" +
                 "INNER JOIN address_street s ON s.id = h.streetid \n" +
-                "WHERE cpt2.cid =" + cid;
+                "WHERE cpt2.cid=" + cid;
 
         try (ResultSet set = statement.executeQuery(query)) {
             while (set.next()) {

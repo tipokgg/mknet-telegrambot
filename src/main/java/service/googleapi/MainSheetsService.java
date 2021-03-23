@@ -1,24 +1,21 @@
-package GoogleAPIUtils;
+package service.googleapi;
 
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
-import service.googleapi.ColumnsConverter;
 import service.EmployeeService;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class SheetsQuickstart {
+public class MainSheetsService {
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-
 
     public static List<RowData> getRowData(long telegramId, Date date) throws IOException {
 
         int startString = EmployeeService.getRow(telegramId); // строка, с которой начинаются заявки нужного монтажника
-        String column = getColumn(date); // колонка по нужной дате
+        String column = getColumnByDate(date); // колонка по нужной дате
 
         // формируем диапазон запроса
         List<String> ranges = Collections.singletonList(column + startString + ":" + column + (startString + 9));
@@ -33,7 +30,7 @@ public class SheetsQuickstart {
 
     }
 
-    private static String getColumn(Date date) throws IOException {
+    private static String getColumnByDate(Date date) throws IOException {
 
         String dateFormatted = sdf.format(date);
 

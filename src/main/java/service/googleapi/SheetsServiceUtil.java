@@ -1,4 +1,4 @@
-package GoogleAPIUtils;
+package service.googleapi;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -22,7 +22,7 @@ public class SheetsServiceUtil {
         }
     }
 
-    final static String spreadsheetId = "1iOSnDxiyQA0szC16cfYuOOKp4gl4nSGNYUk7Etobekw";
+    private final static String spreadsheetId = "1iOSnDxiyQA0szC16cfYuOOKp4gl4nSGNYUk7Etobekw";
 
     public SheetsServiceUtil() {
     }

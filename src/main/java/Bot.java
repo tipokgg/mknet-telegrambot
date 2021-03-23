@@ -1,4 +1,4 @@
-import GoogleAPIUtils.SheetsQuickstart;
+import service.googleapi.MainSheetsService;
 import com.google.api.services.sheets.v4.model.RowData;
 import com.vdurmont.emoji.EmojiParser;
 import dao.SQLConnector;
@@ -66,7 +66,7 @@ public class Bot extends TelegramLongPollingBot {
 
                         List<Integer> unStrikethroughCell = StrikethroughService.getCellCoordinatesByData(msg, update.getCallbackQuery().getMessage().getChatId());
 
-                        if (unStrikethroughCell != null) billingContract.setUnStrikethroughCell(unStrikethroughCell);
+                        billingContract.setUnStrikethroughCell(unStrikethroughCell);
 
                         // дополнительынй обработчик для того, чтобы если в тексте комментария содержится какой нибудь
                         // символ форматирования телеграм api (например, <html>)
@@ -93,7 +93,7 @@ public class Bot extends TelegramLongPollingBot {
 
                         List<Integer> unStrikethroughCell = StrikethroughService.getCellCoordinatesByData(msg, update.getCallbackQuery().getMessage().getChatId());
 
-                        if (unStrikethroughCell != null) billingContract.setUnStrikethroughCell(unStrikethroughCell);
+                        billingContract.setUnStrikethroughCell(unStrikethroughCell);
 
                         // дополнительынй обработчик для того, чтобы если в тексте комментария содержится какой нибудь
                         // символ форматирования телеграм api (например, <html>)
@@ -177,7 +177,9 @@ public class Bot extends TelegramLongPollingBot {
 
                         String[] ss = update.getCallbackQuery().getData().split("±");
 
-                        System.out.println(ss[2]);
+                        execute(new SendMessage()
+                                .setText("Не удалось определить тип заявки. \n Информация в ячейке графика: \n" + ss[2])
+                                .setChatId(update.getCallbackQuery().getMessage().getChatId()));
 
                     } else {
                         execute(new SendMessage()
@@ -203,7 +205,7 @@ public class Bot extends TelegramLongPollingBot {
 
     public SendMessage sendInlineKeyBoardMessage(long telegramId, Date date) throws IOException, GeneralSecurityException {
 
-        List<RowData> cells = SheetsQuickstart.getRowData(telegramId, date);
+        List<RowData> cells = MainSheetsService.getRowData(telegramId, date);
 
         if (cells == null) {
             return new SendMessage().setChatId(telegramId)

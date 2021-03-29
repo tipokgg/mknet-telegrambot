@@ -85,7 +85,7 @@ public class Bot extends TelegramLongPollingBot {
                                     .setChatId(update.getCallbackQuery().getMessage().getChatId()));
                         }
 
-                    } else if (update.getCallbackQuery().getData().startsWith("±84") && update.getCallbackQuery().getData().length() == 6) {
+                    } else if (update.getCallbackQuery().getData().startsWith("±8") && update.getCallbackQuery().getData().length() == 6) {
 
                         String msg = update.getCallbackQuery().getData().replaceAll("±", "");
                         BillingContract billingContract = SQLConnector.getBillingContractForRepair(msg);
